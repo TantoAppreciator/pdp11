@@ -73,4 +73,10 @@ void w_write(address adr, word val)
 }
 word w_read(address adr)
 {
+    byte b1 = mem[adr];
+    byte b2 = mem[adr + 1];
+    word w = b2;
+    w = w << 8;
+    w = (0xFF & b1);
+    return w;
 }
