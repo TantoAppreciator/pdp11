@@ -13,11 +13,17 @@ void w_write(address adr, word val);
 word w_read(address adr);
 void load_data(FILE *stream);
 void mem_dump(address adr, int size);
+void load_file(const char *filename);
+void usage(const char *progname);
 
-int main()
+int main(int argc, char *argv[])
 {
-    load_data(stdin);
-
+    if (argc == 1)
+    {
+        usage(argv[0]);
+        exit(1);
+    }
+    load_file(argv[1]);
     mem_dump(0x40, 20);
     printf("\n");
     mem_dump(0x200, 0x26);
@@ -53,7 +59,7 @@ void load_data(FILE *stream)
 {
     address adr;
     int n;
-    while (2 == fscanf(stream, "%x%x", &adr, &n))
+    while (2 == fscanf(stream, "%hx%x", &adr, &n))
         for (int i = 0; i < n; i++)
         {
             unsigned int x;
@@ -65,4 +71,19 @@ void mem_dump(address adr, int size)
 {
     for (int i = 0; i < size; i += 2)
         printf("%06o: %06o %04x\n", adr + i, w_read(adr + i) & 0xFFFF, w_read(adr + i) & 0xFFFF);
+}
+void load_file(const char *filename)
+{
+    FILE *file = fopen(filename, "r");
+    if (file == NULL)
+    {
+        perror(filename);
+        exit(1);
+    }
+    load_data(file);
+    fclose(file);
+}
+void usage(const char *progname)
+{
+    printf("USAGE: %s flie\n file - PDP-11 execution file\n", progname);
 }
