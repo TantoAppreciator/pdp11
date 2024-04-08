@@ -14,31 +14,19 @@ void run()
     while (1)
     {
         word w = w_read(pc);
-        loger(TRACE, "%06o %06o: ", pc, w);
+        logger(TRACE, "%06o %06o: ", pc, w);
         pc += 2;
         for (int i = 0; i < sizeof(cmd) / sizeof(Command); i++)
         {
             if ((w & cmd[i].mask) == cmd[i].opcode)
             {
-                loger(TRACE, "%s ", cmd[i].name);
+                logger(TRACE, "%s ", cmd[i].name);
                 cmd[i].do_func();
 
-                loger(TRACE, "\n");
+                logger(TRACE, "\n");
                 break;
             }
         }
-        /*if (w == 0)
-            do_halt();
-        else if ((w & 0xF000) == 010000) // 01SSDD
-        {
-            printf("mov ");
-            do_mov();
-        }
-        else if ((w & 0xF000) == 060000) // 01SSDD
-        {
-            printf("add ");
-            do_add();
-        }*/
     }
 }
 int main(int argc, char *argv[])
@@ -49,6 +37,6 @@ int main(int argc, char *argv[])
         exit(1);
     }
     load_file(argv[1]);
-    loger(TRACE, "hello\n");
+    logger(TRACE, "hello\n");
     run();
 }

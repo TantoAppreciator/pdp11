@@ -14,6 +14,13 @@ void load_data(FILE *stream)
             b_write(adr + i, x);
         }
 }
+void reg_dump()
+{
+    printf("\n");
+    for (int i = 0; i < 8; i++)
+        printf("r%d:%o ", i, reg[i]);
+    printf("\n");
+}
 void mem_dump(address adr, int size)
 {
     for (int i = 0; i < size; i += 2)
@@ -34,7 +41,7 @@ void usage(const char *progname)
 {
     printf("USAGE: %s flie\n file - PDP-11 execution file\n", progname);
 }
-void loger(int level, char *format, ...)
+void logger(int level, char *format, ...)
 {
     if (level < log_level)
         return;

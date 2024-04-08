@@ -17,6 +17,7 @@ typedef struct
 
 extern Arg ss, dd;
 
+Arg get_mr(word w);
 void do_nothing();
 void do_halt();
 void do_mov();

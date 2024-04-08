@@ -3,10 +3,14 @@
 
 Arg ss, dd;
 
+Arg get_mr(word w)
+{
+}
 void do_nothing() {}
 void do_halt()
 {
-    loger(TRACE, "THE END\n");
+    reg_dump();
+    logger(TRACE, "THE END\n");
     exit(0);
 }
 void do_mov()
@@ -19,6 +23,7 @@ void do_add()
 }
 void do_inc()
 {
+    w_write(dd.adr, dd.val++);
 }
 void do_sob()
 {

@@ -7,8 +7,9 @@
 #define INFO 2
 #define ERROR 3
 void load_data(FILE *stream);
+void reg_dump();
 void mem_dump(address adr, int size);
 void load_file(const char *filename);
 void usage(const char *progname);
-void loger(int level, char *format, ...);
+void logger(int level, char *format, ...);
 int set_log_level(int level);
