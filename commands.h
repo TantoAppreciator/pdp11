@@ -17,7 +17,11 @@ typedef struct
 
 extern Arg ss, dd;
 
+extern Command cmd[];
+
 Arg get_mr(word w);
+word read_cmd();
+Command parse_cmd(word w);
 void do_nothing();
 void do_halt();
 void do_mov();

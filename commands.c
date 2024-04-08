@@ -3,6 +3,15 @@
 
 Arg ss, dd;
 
+Command cmd[] = {
+    {0170000, 010000, "mov", do_mov},
+    {0170000, 060000, "add", do_add},
+    {0177777, 000000, "halt", do_halt},
+    {0177700, 005200, "inc", do_inc},
+    {0177000, 077000, "sob", do_sob},
+    {0000000, 000000, "unknown", do_nothing},
+};
+
 Arg get_mr(word w)
 {
     Arg res;
@@ -32,6 +41,23 @@ Arg get_mr(word w)
     default:
         logger(ERROR, "Mode %d is not implemented yet\n", m);
         exit(1);
+    }
+    return res;
+}
+word read_cmd()
+{
+    word res = w_read(pc);
+    return res;
+}
+Command parse_cmd(word w)
+{
+    Command res;
+    for (int i = 0; i < sizeof(cmd) / sizeof(Command); i++)
+    {
+        if ((w & cmd[i].mask) == cmd[i].opcode)
+        {
+            res = cmd[i];
+        }
     }
     return res;
 }
