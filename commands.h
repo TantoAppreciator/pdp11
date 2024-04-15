@@ -1,12 +1,19 @@
 #pragma once
 #include <stdio.h>
 #include "mem.h"
+#define NO_PARAM 0
+#define HAS_SS 1
+#define HAS_DD 2
+#define HAS_NN 4
+#define HAS_R 8
+#define HAS_XX 16
 typedef struct
 {
     word mask;
     word opcode;
     char *name;
     void (*do_func)(void);
+    char param;
 } Command;
 
 typedef struct

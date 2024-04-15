@@ -4,14 +4,26 @@ static byte mem[MEMSIZE];
 word reg[8];
 void b_write(address adr, byte val)
 {
+    if (adr < 8)
+    {
+        reg[adr] = val;
+        return;
+    }
     mem[adr] = val;
 }
 byte b_read(address adr)
 {
+    if (adr < 8)
+        return reg[adr] & 0xFF;
     return mem[adr] & 0xFF;
 }
 void w_write(address adr, word val)
 {
+    if (adr < 8)
+    {
+        reg[adr] = val;
+        return;
+    }
     byte b1 = val;
     mem[adr] = b1;
     byte b2 = (val >> 8);
@@ -19,6 +31,8 @@ void w_write(address adr, word val)
 }
 word w_read(address adr)
 {
+    if (adr < 8)
+        return reg[adr] & 0xFF;
     byte b1 = mem[adr];
     byte b2 = mem[adr + 1];
     word w = b2;

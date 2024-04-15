@@ -9,7 +9,6 @@ void run()
     {
         // word w = w_read(pc);
         // logger(TRACE, "%06o %06o: ", pc, w);
-        pc += 2;
         comd = parse_cmd(read_cmd());
         /*
         for (int i = 0; i < sizeof(cmd) / sizeof(Command); i++)
@@ -25,6 +24,7 @@ void run()
         }
         */
         comd.do_func();
+        logger(TRACE, "\n");
     }
 }
 int main(int argc, char *argv[])
@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
         exit(1);
     }
     load_file(argv[1]);
-    logger(TRACE, "hello\n");
     run();
+
+    return 0;
 }
