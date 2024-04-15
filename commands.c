@@ -1,14 +1,15 @@
 #include "pdp11.h"
 #include "commands.h"
 
-Arg ss, dd, nn, r, xx;
+Arg ss, dd, xx;
+unsigned int nn, r;
 
 Command cmd[] = {
     {0170000, 010000, "mov", do_mov, HAS_SS | HAS_DD},
     {0170000, 060000, "add", do_add, HAS_SS | HAS_DD},
     {0177777, 000000, "halt", do_halt, NO_PARAM},
     {0177700, 005200, "inc", do_inc, HAS_DD},
-    {0177000, 077000, "sob", do_sob, HAS_NN},
+    {0177000, 077000, "sob", do_sob, HAS_NN | HAS_R},
     {0000000, 000000, "unknown", do_nothing, NO_PARAM},
 };
 
@@ -65,11 +66,11 @@ Command parse_cmd(word w)
             if (res.param & HAS_DD)
                 dd = get_mr(w);
             if (res.param & HAS_NN)
-                nn = get_mr(w);
+                nn = w & 077;
             if (res.param & HAS_R)
-                r = get_mr(w);
-            if (res.param & HAS_XX)
-                xx = get_mr(w);
+                r = (w >> 6) & 07;
+            // if (res.param & HAS_XX)
+
             return res;
         }
     }
@@ -96,4 +97,7 @@ void do_inc()
 }
 void do_sob()
 {
+    reg[r]--;
+    if (reg[r] != 0)
+        pc = pc - 2 * nn;
 }

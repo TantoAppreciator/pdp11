@@ -25,6 +25,7 @@ void run()
         */
         comd.do_func();
         logger(TRACE, "\n");
+        reg_dump();
     }
 }
 int main(int argc, char *argv[])
