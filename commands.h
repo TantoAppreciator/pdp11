@@ -22,6 +22,14 @@ typedef struct
     word val;
 } Arg;
 
+typedef struct
+{
+    char N;
+    char Z;
+    char V;
+    char C;
+} system_flags;
+
 extern Arg ss, dd;
 
 extern Command cmd[];
@@ -36,3 +44,4 @@ void do_add();
 void do_inc();
 void do_sob();
 void do_clr();
+void do_br();

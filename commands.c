@@ -1,9 +1,11 @@
 #include "pdp11.h"
 #include "commands.h"
 
-Arg ss, dd, xx;
+Arg ss, dd;
 unsigned int nn, r;
+signed char xx;
 char b;
+system_flags psw;
 Command cmd[] = {
     {0170000, 0110000, "mov", do_mov, HAS_SS | HAS_DD},
     {0170000, 0010000, "mov", do_mov, HAS_SS | HAS_DD},
@@ -38,7 +40,10 @@ Arg get_mr(word w)
         if (b)
         {
             res.val = b_read(res.adr);
-            reg[r] += 1;
+            if (r < 6)
+                reg[r] += 1;
+            else
+                reg[r] += 2;
         }
         else
         {
@@ -52,7 +57,10 @@ Arg get_mr(word w)
         break;
     case 4:
         if (b)
-            reg[r] -= 1;
+            if (r < 6)
+                reg[r] -= 1;
+            else
+                reg[r] -= 2;
         else
             reg[r] -= 2;
         res.adr = reg[r];
@@ -93,10 +101,30 @@ Command parse_cmd(word w)
                 nn = w & 077;
             if (res.param & HAS_R)
                 r = (w >> 6) & 07;
+            if (res.param & HAS_XX)
+                xx = w & 077;
             return res;
         }
     }
     return res;
+}
+void set_NZ(word w)
+{
+    if (w == 0)
+        psw.Z = 1;
+    else
+        psw.Z = 0;
+    if (b)
+        psw.N = (w >> 7) & 1;
+    else
+        psw.N = (w >> 15) & 1;
+}
+void set_C(dword w)
+{
+    if (b)
+        psw.C = (w >> 8) & 1;
+    else
+        psw.C = (w >> 16) & 1;
 }
 void do_nothing() {}
 void do_halt()
@@ -107,6 +135,7 @@ void do_halt()
 }
 void do_mov()
 {
+    setNZ(ss.val);
     if (b)
         b_write(dd.adr, ss.val);
     else
@@ -114,11 +143,16 @@ void do_mov()
 }
 void do_add()
 {
-    w_write(dd.adr, ss.val + dd.val);
+    dword res = (dword)ss.val + dd.val;
+    w_write(dd.adr, res);
+    set_NZ(res);
+    set_C(res);
 }
 void do_inc()
 {
-    w_write(dd.adr, dd.val++);
+    word res = dd.val++;
+    w_write(dd.adr, res);
+    set_NZ(res);
 }
 void do_sob()
 {
@@ -132,4 +166,7 @@ void do_clr()
         b_write(dd.adr, 0);
     else
         w_write(dd.adr, 0);
+    psw.N = 0;
+    psw.Z = 1;
+    psw.C = 0;
 }

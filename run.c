@@ -7,22 +7,7 @@ void run()
     Command comd;
     while (1)
     {
-        // word w = w_read(pc);
-        // logger(TRACE, "%06o %06o: ", pc, w);
         comd = parse_cmd(read_cmd());
-        /*
-        for (int i = 0; i < sizeof(cmd) / sizeof(Command); i++)
-        {
-            if ((w & cmd[i].mask) == cmd[i].opcode)
-            {
-                logger(TRACE, "%s ", cmd[i].name);
-                cmd[i].do_func();
-
-                logger(TRACE, "\n");
-                break;
-            }
-        }
-        */
         comd.do_func();
         logger(TRACE, "\n");
         reg_dump();

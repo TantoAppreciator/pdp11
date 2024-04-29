@@ -4,5 +4,6 @@
 typedef char byte;
 typedef unsigned int Length;
 typedef short word;
+typedef int dword;
 typedef word address;
 extern word reg[8];
