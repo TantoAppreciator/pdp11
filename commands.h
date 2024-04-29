@@ -45,3 +45,6 @@ void do_inc();
 void do_sob();
 void do_clr();
 void do_br();
+void do_beq();
+void do_tst();
+void do_cmp();

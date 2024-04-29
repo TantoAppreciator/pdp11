@@ -7,7 +7,7 @@ signed char xx;
 char b;
 system_flags psw;
 Command cmd[] = {
-    {0170000, 0110000, "mov", do_mov, HAS_SS | HAS_DD},
+    {0170000, 0110000, "movb", do_mov, HAS_SS | HAS_DD},
     {0170000, 0010000, "mov", do_mov, HAS_SS | HAS_DD},
     {0170000, 060000, "add", do_add, HAS_SS | HAS_DD},
     {0177777, 000000, "halt", do_halt, NO_PARAM},
@@ -15,6 +15,12 @@ Command cmd[] = {
     {0177000, 077000, "sob", do_sob, HAS_NN | HAS_R},
     {0177700, 0105000, "clr", do_clr, HAS_DD},
     {0177700, 0005000, "clr", do_clr, HAS_DD},
+    {0177400, 0000400, "br", do_br, HAS_XX},
+    {0177400, 0001400, "beq", do_beq, HAS_XX},
+    {0177700, 0005700, "tst", do_tst, HAS_DD},
+    {0177700, 0105700, "tstb", do_tst, HAS_DD},
+    {0170000, 0020000, "cmp", do_cmp, HAS_SS | HAS_DD},
+    {0170000, 0120000, "cmpb", do_cmp, HAS_SS | HAS_DD},
     {0000000, 000000, "unknown", do_nothing, NO_PARAM},
 };
 
@@ -40,10 +46,7 @@ Arg get_mr(word w)
         if (b)
         {
             res.val = b_read(res.adr);
-            if (r < 6)
-                reg[r] += 1;
-            else
-                reg[r] += 2;
+            reg[r] += (r < 6) ? 1 : 2;
         }
         else
         {
@@ -57,10 +60,7 @@ Arg get_mr(word w)
         break;
     case 4:
         if (b)
-            if (r < 6)
-                reg[r] -= 1;
-            else
-                reg[r] -= 2;
+            reg[r] -= (r < 6) ? 1 : 2;
         else
             reg[r] -= 2;
         res.adr = reg[r];
@@ -102,7 +102,7 @@ Command parse_cmd(word w)
             if (res.param & HAS_R)
                 r = (w >> 6) & 07;
             if (res.param & HAS_XX)
-                xx = w & 077;
+                xx = w & 0377;
             return res;
         }
     }
@@ -110,10 +110,7 @@ Command parse_cmd(word w)
 }
 void set_NZ(word w)
 {
-    if (w == 0)
-        psw.Z = 1;
-    else
-        psw.Z = 0;
+    psw.Z = (w == 0) ? 1 : 0;
     if (b)
         psw.N = (w >> 7) & 1;
     else
@@ -129,17 +126,18 @@ void set_C(dword w)
 void do_nothing() {}
 void do_halt()
 {
+    logger(TRACE, "\n");
     reg_dump();
     logger(TRACE, "THE END\n");
     exit(0);
 }
 void do_mov()
 {
-    setNZ(ss.val);
     if (b)
         b_write(dd.adr, ss.val);
     else
         w_write(dd.adr, ss.val);
+    set_NZ(ss.val);
 }
 void do_add()
 {
@@ -169,4 +167,24 @@ void do_clr()
     psw.N = 0;
     psw.Z = 1;
     psw.C = 0;
+}
+void do_br()
+{
+    pc = pc + 2 * xx;
+}
+void do_beq()
+{
+    if (psw.Z == 1)
+        do_br();
+}
+void do_tst()
+{
+    psw.C = 0;
+    set_NZ(dd.val);
+}
+void do_cmp()
+{
+    dword res = (dword)ss.val - dd.val;
+    set_NZ(res);
+    set_C(res);
 }
