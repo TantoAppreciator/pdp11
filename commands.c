@@ -17,6 +17,7 @@ Command cmd[] = {
     {0177700, 0005000, "clr", do_clr, HAS_DD},
     {0177400, 0000400, "br", do_br, HAS_XX},
     {0177400, 0001400, "beq", do_beq, HAS_XX},
+    {0177400, 0100000, "bpl", do_bpl, HAS_XX},
     {0177700, 0005700, "tst", do_tst, HAS_DD},
     {0177700, 0105700, "tstb", do_tst, HAS_DD},
     {0170000, 0020000, "cmp", do_cmp, HAS_SS | HAS_DD},
